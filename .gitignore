@@ -48,5 +48,4 @@ hw/testjig/*.svg
 /sw/emu/plinky/x64/Debug
 /sw/emu/wavetable/x64/Debug
 /sw/emu/x64/Debug
-/sw/emu/plinky.vcxproj.user
 /sw/plinkyfwpkg/x64/Debug
