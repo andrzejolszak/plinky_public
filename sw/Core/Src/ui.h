@@ -1183,7 +1183,9 @@ extern s16 noisegate;
 void plinky_frame(void) {
 	codec_setheadphonevol(sysparams.headphonevol + 45);
 
+#ifndef EMU
 	PumpWebUSB(false);
+#endif
 
 #ifdef NOISETEST
 	static u8 foo;
@@ -1212,8 +1214,10 @@ void plinky_frame(void) {
 
 	if (g_disable_fx) {
 		// web usb is up to its tricks :)
+#ifndef EMU
 		void draw_webusb_ui(int);
 		draw_webusb_ui(0);
+		#endif
 		HAL_Delay(30);
 		return;
 	}

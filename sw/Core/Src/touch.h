@@ -1,3 +1,5 @@
+#define __FLT_MAX__ 3.402823466e+38F
+
 #define TOUCH_MIN_PRES -2048
 
 u16 finger_raw[36]; // raw value back from stm

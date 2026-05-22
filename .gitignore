@@ -44,3 +44,9 @@ hw/plinky_front_osh/plinky_front_osh-backups/
 hw/testjig/testjig-backups/
 hw/testjig/*.svg
 *.lck
+/sw/emu/.vs/plinky
+/sw/emu/plinky/x64/Debug
+/sw/emu/wavetable/x64/Debug
+/sw/emu/x64/Debug
+/sw/emu/plinky.vcxproj.user
+/sw/plinkyfwpkg/x64/Debug

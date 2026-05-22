@@ -28,7 +28,7 @@ static inline uint32_t tud_vendor_write(void const *buffer, uint32_t bufsize) { 
 extern const short wavetable[17][1031];
 
 void flash_program_array(void *addr, void *srcbuf, int size_bytes) {
-  #ifndef WASM
+  #if !defined(WASM) && !defined(EMU)
   FLASH_EraseInitTypeDef EraseInitStruct;
   int page = (((size_t)addr) & 0xffffff) / 2048;
   if (page < 32 || page >= 512) // protect bootloader!
