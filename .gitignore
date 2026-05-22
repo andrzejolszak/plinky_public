@@ -49,3 +49,5 @@ hw/testjig/*.svg
 /sw/emu/wavetable/x64/Debug
 /sw/emu/x64/Debug
 /sw/plinkyfwpkg/x64/Debug
+/sw/emu/flashmcu.raw
+/sw/emu
