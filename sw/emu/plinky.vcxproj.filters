@@ -170,6 +170,9 @@
     <ClInclude Include="webusb.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="imgui\glfw\lib-vc2010-64\glfw3.lib">

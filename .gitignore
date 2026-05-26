@@ -51,3 +51,4 @@ hw/testjig/*.svg
 /sw/plinkyfwpkg/x64/Debug
 /sw/emu/flashmcu.raw
 /sw/emu
+/.vs

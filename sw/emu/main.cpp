@@ -1,10 +1,9 @@
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "main.h"
+
 #include <imgui.h>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+#include <GL/gl3w.h> // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
 #include <GLFW/glfw3.h>
 #ifdef _WIN32
 #include <shellscalingapi.h>
@@ -18,24 +17,20 @@
 
 #ifdef _WIN32
 
-#pragma comment(lib,"winmm.lib") // midi
-#pragma comment(lib,"shcore.lib") // dpi
-#pragma comment(lib,"opengl32.lib") // for wglGetProcAddress
+#pragma comment(lib, "winmm.lib")    // midi
+#pragma comment(lib, "shcore.lib")   // dpi
+#pragma comment(lib, "opengl32.lib") // for wglGetProcAddress
 #ifdef _WIN64
-#pragma comment(lib,"portaudio/lib/portaudio_x64.lib") 
-#pragma comment(lib,"imgui/glfw/lib-vc2010-64/glfw3.lib") // for imgui rendering
+#pragma comment(lib, "portaudio/lib/portaudio_x64.lib")
+#pragma comment(lib, "imgui/glfw/lib-vc2010-64/glfw3.lib") // for imgui rendering
 #else
-#pragma comment(lib,"portaudio/lib/portaudio_x86.lib") 
-#pragma comment(lib,"imgui/glfw/lib-vc2010-32/glfw3.lib") // for imgui rendering
+#pragma comment(lib, "portaudio/lib/portaudio_x86.lib")
+#pragma comment(lib, "imgui/glfw/lib-vc2010-32/glfw3.lib") // for imgui rendering
 #endif
 
-#endif  // _WIN32
+#endif // _WIN32
 
-//#define STRETCH_PROTO
-
-
-bool enable_emu_audio = true;
-
+// #define STRETCH_PROTO
 
 #define USER_DEFAULT_SCREEN_DPI 96
 
@@ -51,64 +46,13 @@ bool enable_emu_audio = true;
 #define BLOCK_SAMPLES 64
 #endif
 
-typedef unsigned char u8;
-typedef unsigned int u32;
-typedef short s16;
-typedef signed char s8;
-
 extern "C" {
-	extern unsigned short expander_out[4];
-	uint32_t emupixels[128 * 32];
-	int16_t accel_raw[3];
-	float accel_lpf[2];
-	float accel_smooth[2];
-	void resetspistate(void);
+
+
 	void spi_update_dac(int chan) {
 		resetspistate();
 	}
 
-	void emu_setadc(float araw, float braw, float pitchcv, float gatecv, float xcv, float ycv, float acv, float bcv, int gateforce, int pitchsense, int gatesense);
-
-	void plinky_frame();
-	void plinky_init();
-	void uitick(u32* dst, const u32* src, int half);
-	extern float gainhistoryrms[512];
-	extern int ghi;
-	extern float knobhistory[512];
-	extern int khi;
-	typedef unsigned short u16;
-	extern volatile int encval;
-	extern volatile u8 encbtn;
-
-	extern float arpdebug[1024];
-	extern int arpdebugi;
-
-	extern int emucvouthist;
-	extern float emucvout[6][256];
-	extern float emupitchloopback;
-	extern int emupitchsense, emugatesense;
-
-	void ApplyUF2File(const char* fname);
-
-	extern int samplelen;
-	typedef struct FingerRecord {
-		u8 pos[4];
-		u8 pressure[8];
-	} FingerRecord;
-	typedef struct Preset {
-		s16 params[96][8];
-		u8 arpon;
-		s8 loopstart_step;
-		s8 looplen_step;
-		u8 paddy[16 - 3];
-	} Preset;
-	typedef struct PatternQuarter {
-		FingerRecord steps[16][8];
-		s8 autoknob[16 * 8][2];
-	} PatternQuarter;
-	extern Preset rampreset;
-	extern PatternQuarter rampattern[4];
-	extern s8 cur_step;
 #include "../Core/Src/adc.h"
 #include "../Core/Src/wtenum.h"
 	extern const short wavetable[WT_LAST][WAVETABLE_SIZE ];
@@ -288,9 +232,6 @@ static void glfw_error_callback(int error, const char* description){    fprintf(
 
 int clampi(int x, int mn, int mx) { return (x<mn)?mn:(x>mx)?mx:x; }
 
-extern "C" u8 emuleds[9][8];
-u8 emuleds[9][8];
-
 int buttonsw, buttonsh, buttonscomp;
 GLuint oledtex,buttonstex;
 //#define ROTATE_OLED
@@ -312,10 +253,8 @@ extern "C" void EmuStartSound(void) {
 float GRandom() {
 	return rand()/float(RAND_MAX);
 }
-extern "C" short _flashram[8 * 2 * 1024 * 1024];
-extern "C" int emutouch[9][2];
-int emutouch[9][2];
 
+int emutouch[9][2];
 
 typedef struct Sample {
 	// fmt
@@ -390,17 +329,6 @@ const char* ParseWAV(Sample* s, const char* fname) {
 }
 
 void EmuFrame();
-extern "C" float life_damping;
-extern "C" float life_force;
-extern "C" float p_grainpos ;
-extern "C" float p_grainsize ;
-extern "C" float p_timestretch;
-extern "C" float p_pitchy;
-extern "C" int64_t p_playhead;
-extern "C" float m_compressor, m_dry, m_audioin, m_dry2wet, m_delaysend, m_delayreturn, m_reverbin, m_reverbout, m_fxout, m_output;
-
-extern "C" float lfo_eval(u32 ti, float warp, unsigned int shape);
-
 
 float dflux[4096];
 static float keys[64][128];
@@ -459,6 +387,7 @@ extern "C" bool send_midimsg(u8 status, u8 data1, u8 data2) {
 			return false;
 	return true;
 }
+
 #else  // _WIN32
 // TODO: Add MIDI support on non-Windows platforms.
 extern "C" bool midi_receive(unsigned char packet[4]) {
@@ -468,13 +397,6 @@ extern "C" bool send_midimsg(u8 status, u8 data1, u8 data2) {
 	return false;
 }
 #endif
-
-typedef struct CalibResult {
-	u16 pressure[8];
-	s16 pos[8];
-} CalibResult;
-extern "C" CalibResult calibresults[18];
-extern "C" int flash_readcalib(void);
 
 bool plinky_inited = false;
 
@@ -591,6 +513,7 @@ float eval_wave(int shape, int i) {
 	
 }
 int main(int argc, char** argv) {
+	enable_emu_audio = true;
 	const char* midiin_name_to_match = "";
 	const char* midiout_name_to_match = "";
 
@@ -1155,12 +1078,7 @@ if (enable_emu_audio) {
 		plinky_inited = 1;
 		while (1) {
 			plinky_frame();
-#ifdef _WIN32
-			Sleep(33);
-#else
-			// TODO: Test on Windows. Maybe it works and we can kill the #ifdef!
-			std::this_thread::sleep_for(std::chrono::milliseconds(33));
-#endif
+            SleepMillis(33);
 		};
 		});
 	while (1) {
@@ -1169,25 +1087,32 @@ if (enable_emu_audio) {
 	return 0;
 }
 
+void SleepMillis(int millis) { 
+	std::this_thread::sleep_for(std::chrono::milliseconds(millis)); 
+}
+
+void Shutdown() {
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+  glfwTerminate();
+  if (enable_emu_audio) {
+    err = Pa_StopStream(stream);
+    if (err != paNoError)
+      paerror("stop");
+    err = Pa_CloseStream(stream);
+    if (err != paNoError)
+      paerror("close");
+    err = Pa_Terminate();
+    if (err != paNoError)
+      paerror("terminate");
+  }
+  exit(0);
+}
 
 void EmuFrame() {
-	if (glfwWindowShouldClose(window)) {
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-		glfwTerminate();
-		if (enable_emu_audio) {
-			err = Pa_StopStream(stream);
-			if (err != paNoError)
-				paerror("stop");
-			err = Pa_CloseStream(stream);
-			if (err != paNoError)
-				paerror("close");
-			err = Pa_Terminate();
-			if (err != paNoError)
-				paerror("terminate");
-		}
-		exit(0);
+	if (glfwWindowShouldClose(window) || shutdownNow) {
+		Shutdown();
 	}
 	glfwPollEvents();
 	ImGui_ImplOpenGL3_NewFrame();
@@ -1202,10 +1127,6 @@ void EmuFrame() {
 	
 	ImGui::Begin("plinky 7", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings);
 
-
-	static float araw = 0.5f;
-	static float braw = 0.5f;
-	static float encraw = 0.f;
 	static float pitchcv = 0.f;
 	static float acv = 0.f;
 	static float bcv = 0.f;
