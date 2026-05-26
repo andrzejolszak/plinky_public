@@ -62,7 +62,7 @@ void lpzwtest(void) {
 #endif
 
 void bootswish(void) {
-#ifdef WASM
+#if defined(WASM) || defined(EMU)
 	return;
 #endif
 #ifdef LPZW_TEST

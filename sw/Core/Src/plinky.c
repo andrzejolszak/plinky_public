@@ -3254,7 +3254,10 @@ void EMSCRIPTEN_KEEPALIVE plinky_init(void) {
 		#endif
 	}
 
+	#if !defined(EMU)
 	HAL_Delay(100); // stablise power before bringing oled up
+	#endif
+	
 	oled_init();
 	check_bootloader_flash();
 	reverb_clear(); // ram2 is not cleared by startup.s as written.
@@ -3333,7 +3336,11 @@ void EMSCRIPTEN_KEEPALIVE plinky_init(void) {
 		flashvalid |= 2;
 		flash_writecalib(3);
 	}
+
+#ifndef  EMU
 	HAL_Delay(80);
+#endif
+
 	int knoba= GetADCNoCalib(ADC_AKNOB);
 	int knobb= GetADCNoCalib(ADC_BKNOB);
 	bootswish();

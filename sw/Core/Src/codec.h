@@ -388,7 +388,9 @@ void codec_init(void) {
 	    wmcodec_write(OUT4MIX, OUT4MIX_OUT4MUTE);
 
 
+		#ifndef EMU
 	    HAL_Delay(100);
+		#endif
 	    wmcodec_write(LDACVOL, 255);
 	    wmcodec_write(RDACVOL, 255 | RDACVOL_DACVU);
 
