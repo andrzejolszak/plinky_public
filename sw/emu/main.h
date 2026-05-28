@@ -9,6 +9,7 @@
 #define EMSCRIPTEN_KEEPALIVE
 #endif
 
+#define BLOCK_SAMPLES 64
 extern "C" {
 
 typedef unsigned char u8;
@@ -110,6 +111,7 @@ typedef struct CalibResult {
 extern "C" CalibResult calibresults[18];
 extern "C" int flash_readcalib(void);
 
+int getheadphonevol(void);
 uint32_t wang_hash(uint32_t seed);
 int main(int argc, char **argv);
 void Shutdown();
