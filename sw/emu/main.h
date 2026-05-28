@@ -120,4 +120,5 @@ void ApplyUF2File(const char *fname);
 void plinky_frame(void);
 void SleepMillis(int millis);
 void EmuFrame();
+void flip(void);
 }
