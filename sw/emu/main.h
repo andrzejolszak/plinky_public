@@ -28,32 +28,73 @@ extern unsigned short expander_out[4];
 
 void resetspistate(void);
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="araw">A pot: 0 - 1</param>
+/// <param name="braw">B pot: 0 - 1</param>
+/// <param name="pitchcv">Pitchcv in semitones: -1.5*12 - 6*12</param>
+/// <param name="gatecv">0 - 5</param>
+/// <param name="xcv">-5 - 5</param>
+/// <param name="ycv">-5 - 5</param>
+/// <param name="acv">-5 - 5</param>
+/// <param name="bcv">-5 - 5</param>
+/// <param name="gateforce">Bool 0/1</param>
+/// <param name="pitchsense">0 = no pitch plug, 1 = pitch loopback (in only), 2 = pitch loopback (cabled! implies pitchcv = emupitchloopback * 12.f), 3 = pitch control</param>
+/// <param name="gatesense">Bool 0/1</param>
 void emu_setadc(float araw, float braw, float pitchcv, float gatecv, float xcv, float ycv, float acv, float bcv, int gateforce,
                 int pitchsense, int gatesense);
 
 void plinky_frame();
 void plinky_init();
 void uitick(u32 *dst, const u32 *src, int half);
+
+/// <summary>
+/// Gain history
+/// </summary>
 extern float gainhistoryrms[512];
 extern int ghi;
 extern float knobhistory[512];
 extern int khi;
 typedef unsigned short u16;
 
-// Encoder value
+// Encoder value EMU
 static float encraw = 0.f;
+
+/// <summary>
+/// The encoder value. Speed/delta semantics, comes back to ~2 when not moving
+/// </summary>
 extern volatile int encval;
+
+/// <summary>
+/// The encoder buttong bool 0/1
+/// </summary>
 extern volatile u8 encbtn;
 
-// A and B knobs
+// A and B knobs EMU
 static float araw = 0.5f;
 static float braw = 0.5f;
 
 extern float arpdebug[1024];
 extern int arpdebugi;
 
-extern int emucvouthist;
+
+/// <summary>
+/// CV outs
+/// 0 - trigger
+/// 1 - clock
+/// 2 - pressure
+/// 3 - gate
+/// 4 - pitchlo
+/// 5 - pitchhi
+/// </summary>
 extern float emucvout[6][256];
+
+/// <summary>
+/// CV out index
+/// </summary>
+extern int emucvouthist;
+
 extern float emupitchloopback;
 extern int emupitchsense, emugatesense;
 static bool shutdownNow;
@@ -99,6 +140,10 @@ extern "C" float p_grainsize;
 extern "C" float p_timestretch;
 extern "C" float p_pitchy;
 extern "C" int64_t p_playhead;
+
+/// <summary>
+/// For monitoring levels/gain staging
+/// </summary>
 extern "C" float m_compressor, m_dry, m_audioin, m_dry2wet, m_delaysend, m_delayreturn, m_reverbin, m_reverbout, m_fxout, m_output;
 
 extern "C" float lfo_eval(u32 ti, float warp, unsigned int shape);

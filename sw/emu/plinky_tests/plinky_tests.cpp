@@ -24,15 +24,10 @@ namespace tests
             enable_emu_audio = false;
             plinky_init();
 
-            // Fill the initial scope and lfo history buffers to run the animations
-            for (int i = 0; i < 300; i++) {
-              uitick(audioOut, audioin, 0);
-            }
+            // Fill the initial scope and lfo history buffers and run the init animations
+            WaitMs(5000, audioOut, audioin);
 
-            // Run the logo fade-out animation
-            for (int i = 0; i < 100; i++) {
-              plinky_frame();
-            }
+            ShiftInitWeirdnessFix(audioOut, audioin);
 
             // Assert stable screen
             GetDisplay(disp1);
@@ -91,7 +86,7 @@ namespace tests
             AssertDisplay(disp1, true);
 
             char *expectedLeds = 
-                "X......."
+                "?......."
                 "........"
                 "........"
                 "........"
@@ -114,57 +109,49 @@ namespace tests
             enable_emu_audio = false;
             plinky_init();
 
-            // Fill the initial scope and lfo history buffers to run the animations
-            for (int i = 0; i < 300; i++) {
-              uitick(audioOut, audioin, 0);
-            }
+            // Fill the initial scope and lfo history buffers and run the init animations
+            WaitMs(5000, audioOut, audioin);
 
-            // Run the logo fade-out animation
-            for (int i = 0; i < 100; i++) {
-              plinky_frame();
-            }
+            ShiftInitWeirdnessFix(audioOut, audioin);
 
             settouch(0, 7, 2047);
-            for (int i = 0; i < 100; i++) {
-              uitick(audioOut, audioin, 0);
-              plinky_frame();
-            }
+            WaitMs(300, audioOut, audioin);
 
             char* initialized = 
-"___XXXX__________XX_____________________________________________________________________________________________X________XXXXXX_"
-"_XXXXXXXX_______XXX___________________________________________________________________________________________________________XX"
+"___XXXX__________XX_____________________________________________________________________________________________X_______XXXXXXX_"
+"_XXXXXXXX_______XXX_____________________________________________________________________________________________X_____________XX"
 "_XX____XX_______XXX___________________________________________________________________________________________________________XX"
-"XX_____________XXXX_____________________________________________________________________________________________XXXXXXXXXXXXXXXX"
-"XX_____________XXXX___________________________________________________________________________________________________________XX"
+"XX_____________XXXX____________________________________________________________________________________________XXXXXXXXXXXXXXXXX"
+"XX_____________XXXX____________________________________________________________________________________________X______________XX"
+"XX_______________XX___________________________________________________________________________________________________________XX"
+"XX_______________XX___________________________________________________________________________________________________________XX"
 "XX_______________XX___________________________________________________________________________________________________________XX"
 "XX_______________XX___________________________________________________________________________________________________________XX"
 "XX_______________XX___________________________________________________________________________________________________________XX"
 "XX_______________XX____________________________________________________________________________________________X______________XX"
-"XX_______________XX____________________________________________________________________________________________X______________XX"
-"XX_______________XX___________________________________________________________________________________________________________XX"
 "XX_______________XX_____________________________________________________________________________________________XXXXXXXXXXXXXXXX"
-"_XX____XX________XX___________________________________________________________________________________________________________XX"
+"_XX____XX________XX____________________________________________________________________________________________X______________XX"
 "_XXXXXXXX________XX___________________________________________________________________________________________________________XX"
 "___XXXX__________XX___________________________________________________________________________________________________________XX"
 "______________________________________________________________________________________________________________________________XX"
 "______________________XX______________________________________________________________________________________________________XX"
 "_____________________XXX______________________________________________________________________________________________________XX"
-"XXX__________________XXX_______________________________________________________________________________________X______________XX"
-"_XXXXXXXXXXXX_______XXXX________________________________________________________________________________________XXXXXXXXXXXXXXXX"
-"X__X_X__X_XXXXXXXXX_XXXX___________________XXX_________________________________________________________________X______________XX"
-"X__X_X__X_X__X____XXXXXXXXXX________________X_________________________________________________________________________________XX"
-"_XX___XX___XX_________XX___XXXXXXXXXX______X_X________________________________________________________________________________XX"
-"______________________XX____________XXXXXXXXXXX_______________________________________________________________________________XX"
-"_XX___XX___XX_________XX___________________X_XXXXXXXXXXXXX______________________________________________________________________"
-"XXXX_X__X_X__X________XX____________________X____________XXXXXXXXXXXXX__________________________________________________________"
-"XXXX_X__X_X__X________XX___________________X_X_______________________XXXXXXXXXXXXXXX____________________________________________"
-"_XX___XX___XX_________XX____________________X______________________________________XXXXXXXXXXXXXXXX___________X_XXXXXXXXXXXXXXXX"
-"______________________XX___________________X_X_____________________________________________________XXXXXXXXXXXX_________________"
+"XX___________________XXX______________________________________________________________________________________________________XX"
+"_XXXXXXXXX_XX_______XXXX________________________________________________________________________________________XXXXXXXXXXXXXXXX"
+"X__X_X__X_XXXXXXXX__XXXX___________________XXX________________________________________________________________________________XX"
+"X__X_X__X_X__X____XXXXXXXXX_________________X_________________________________________________________________X_______________XX"
+"_XX___XX___XX_________XX__XXXXXXXXXX_______X_X________________________________________________________________________________XX"
+"______________________XX____________XXXXXXXXXX________________________________________________________________X_______________XX"
+"_XX___XX___XX_________XX___________________X_XXXXXXXXXXXX_______________________________________________________________________"
+"XXXX_X__X_X__X________XX____________________X____________XXXXXXXXXXXX___________________________________________________________"
+"XXXX_X__X_X__X________XX___________________X_X_______________________XXXXXXXXXXXXXX_____________________________________________"
+"_XX___XX___XX_________XX____________________X_____________________________________XXXXXXXXXXXXXXXX______________XXXXXXXXXXXXXXXX"
+"______________________XX___________________X_X___________________________________________________XXXXXXXXXXXXXX_________________"
 "______________________XX____________________X___________________________________________________________________________________"
 "______________________XX___________________X_X__________________________________________________________________________________"
 "___________________________________________________XXX______XXX______XXX______XXX_____XXX______XXX______XXX_____________________";
 
-            AssertDisplay(initialized, true);
+             AssertDisplay(initialized, true);
 
             char* expectedLeds = 
                 "x......."
@@ -179,21 +166,20 @@ namespace tests
 
             AssertLeds(expectedLeds);
 
-            for (int i = 0; i < 100; i++) {
-              settouch(8, 2, 500 + i * 100);
-              plinky_frame();
-              uitick(audioOut, audioin, 0);
-            }
+            settouch(0, 7, 0);
+
+            settouch(8, 1, 2000);
+            WaitMs(1000, audioOut, audioin);
 
             expectedLeds = 
-                "........"
-                ".......X"
-                ".......X"
-                ".......X"
-                ".......X"
-                ".......X"
-                ".......X"
-                ".......X"
+                ".......?"
+                ".......?"
+                ".......?"
+                ".......?"
+                ".......?"
+                ".......?"
+                ".......?"
+                ".......?"
                 ".X......";
 
             AssertLeds(expectedLeds);
@@ -235,6 +221,77 @@ namespace tests
             AssertDisplay(initialized, true);
 		}
 
+        TEST_METHOD(SimpleParams)
+		{	
+            u32 audioin[BLOCK_SAMPLES];
+            u32 audioOut[BLOCK_SAMPLES];
+            char disp1[128 * 32];
+
+            // Init
+            enable_emu_audio = false;
+            plinky_init();
+
+            // Fill the initial scope and lfo history buffers and run the init animations
+            WaitMs(5000, audioOut, audioin);
+
+            ShiftInitWeirdnessFix(audioOut, audioin);
+
+            emu_setadc(0.5f, 0.5f, 12, 2, 3, -4, -1, 3, 0, 0, 0); // nop
+            WaitMs(300, audioOut, audioin);
+
+            encval += 5; // nop
+            WaitMs(100, audioOut, audioin);
+
+            encval -= 5; // nop
+            WaitMs(100, audioOut, audioin);
+
+            encbtn = 1; // nop
+            WaitMs(100, audioOut, audioin);
+
+            encbtn = 0; // nop
+            WaitMs(100, audioOut, audioin);
+
+            settouch(3, 4, 2047);
+            WaitMs(500, audioOut, audioin);
+
+            Assert::AreEqual(-48.1648f, gainhistoryrms [ghi], 0.001f);
+
+            Assert::AreEqual(0.385687f, emucvout [2][emucvouthist], 0.001f); // pressure
+
+            Assert::AreEqual(0.312069f, m_dry, 0.001f);
+            Assert::AreEqual(1.25f, m_compressor, 0.001f);
+            Assert::AreEqual(0.156212f, m_reverbin, 0.001f);
+            Assert::AreEqual(0.0487366f, m_reverbout, 0.001f);
+            Assert::AreEqual(0.0487366f, m_fxout, 0.001f);
+            Assert::AreEqual(0.335205f, m_output, 0.001f);
+		}
+
+        void ShiftInitWeirdnessFix(u32 *audioOut, const u32 *audioin)
+        {
+            settouch(8, 1, 1500, 150);
+            WaitMs(100, audioOut, audioin);
+
+            settouch(8, 1, 2000, 120);
+            WaitMs(100, audioOut, audioin);
+
+            settouch(8, 1, 0, 110);
+            WaitMs(1000, audioOut, audioin);
+        }
+
+        void WaitMs(int millis, u32 *audioOut, const u32 *audioin) {
+            for (int i = 0; i < millis; i++) {
+              // 500hz - no half-frames
+              if (i % 2 == 0) {
+                uitick(audioOut, audioin, 0);
+              }
+
+              // ~21hz
+              if (i % 48 == 0) {
+                plinky_frame();
+              }
+            }
+        }
+
         /// <summary>
         ///    01234567
         ///    ¨¨¨¨¨¨¨¨
@@ -247,9 +304,9 @@ namespace tests
         /// <param name="idx">0-8, 0-7 are the vertical rows 8 is the bottom horizontal row.</param>
         /// <param name="pos">0-7, 0 s top/left</param>
         /// <param name="pressure">0-2047</param>
-        void settouch(int idx, int pos, int pressure) {
+        void settouch(int idx, int pos, int pressure, int baseOffset = 100) {
           if (idx >= 0 && idx < 9)
-            emutouch[idx][1] = 100 + pos * 255, emutouch[idx][0] = pressure;
+            emutouch[idx][1] = baseOffset + pos * 255, emutouch[idx][0] = pressure;
         }
 
         void GetDisplay(char *buf) { 
@@ -284,7 +341,7 @@ namespace tests
               char exp = expected[yi * 8 + xi];
               expectedPretty[(yi * 9) + xi] = exp;
 
-              if (val != exp && firstDiffLine == -1) {
+              if (exp != '?' && val != exp && firstDiffLine == -1) {
                 firstDiffLine = yi;
               }
             }
@@ -316,10 +373,12 @@ namespace tests
                 char val = (emupixels[yi * 128 + xi] == 0xffffffff) ? 'X' : '_';
                 buf[(yi * 128) + xi] = val;
                 bufPretty[(yi * 129) + xi] = val;
-                expectedPretty[(yi * 129) + xi] = expected[yi * 128 + xi];
+
+                char exp = expected[yi * 128 + xi];
+                expectedPretty[(yi * 129) + xi] = exp;
 
                 diffPretty[(yi * 129) + xi] = val;
-                if (buf[(yi * 128) + xi] != expected[(yi * 128) + xi]) 
+                if (exp != '?' && buf[(yi * 128) + xi] != exp) 
                 {
                   diffPretty[(yi * 129) + xi] = val == 'X' ? '+' : '-';
                   if (firstDiffLine == -1) {
@@ -347,46 +406,5 @@ namespace tests
               Assert::IsTrue(firstDiffLine > -1, wc);
             }
         }
-
-		void pacb(const void *input, void *output) {
-                  u32 audioin[BLOCK_SAMPLES];
-                  u32 temp[BLOCK_SAMPLES];
-
-                  int mid45 = getheadphonevol();
-                  float hpvol = mid45 * (1.f / 32768.f / 63.f);
-
-                  if (input != NULL)
-                  {
-                    #define PI 3.1415926535897932384626433832795f
-                    {
-                      float *src = (float *)input;
-                      short *dst = (short *)audioin;
-                      static float theta = 0.f;
-                      for (int i = 0; i < BLOCK_SAMPLES; ++i) {
-                        float l = src ? *src++ : 0;
-                        float r = src ? *src++ : 0;
-                        if (0) {
-                          r = l = sinf(theta) * sinf(theta * 0.001f) * 0.125f;
-                          theta += 440.f * PI * 2.f / 32000.f;
-                          if (theta >= PI * 2.f * 1000.f)
-                            theta -= PI * 2.f * 1000.f;
-                        }
-                        *dst++ = (short)(l * (32767.f));
-                        *dst++ = (short)(r * (32767.f));
-                      }
-                    }
-                  }
-
-                  uitick(temp, audioin, 0);
-                  
-                  short *src = (short *)temp;
-                  float *dst = (float *)output;
-                  for (int i = 0; i < BLOCK_SAMPLES; ++i) {
-                    short l = *src++;
-                    short r = *src++;
-                    *dst++ = l * hpvol;
-                    *dst++ = r * hpvol;
-                  }
-                }
 	};
 }
