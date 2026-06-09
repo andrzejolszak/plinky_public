@@ -133,6 +133,9 @@ extern short _flashram[8 * 2 * 1024 * 1024];
 // Touch input
 extern int emutouch[9][2];
 
+// Time
+extern uint64_t millisEmu;
+
 extern "C" float life_damping;
 extern "C" float life_force;
 extern "C" float p_grainpos;

@@ -96,7 +96,11 @@ typedef struct TickCounter {
 #ifdef EMU
 #ifdef _WIN32
 LARGE_INTEGER pffreq,pfstart;
+uint64_t millisEmu = 0;
 static inline uint64_t emu_rdtsc(void) {
+  if (millisEmu > 0) {
+	return millisEmu * 80000;
+  }
 	LARGE_INTEGER now;
 	QueryPerformanceCounter(&now);
 	return (((now.QuadPart-pfstart.QuadPart)*80000000) / pffreq.QuadPart);
