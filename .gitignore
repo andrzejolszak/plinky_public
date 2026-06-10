@@ -52,3 +52,5 @@ hw/testjig/*.svg
 /sw/emu/flashmcu.raw
 /sw/emu
 /.vs
+
+!/sw/emu/plinky_tests/*.bmp
