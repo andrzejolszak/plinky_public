@@ -330,8 +330,8 @@ enum EParams {
             pressButton(P_DEGREE, audioOut, audioin);
             releaseButton(P_DEGREE, audioOut, audioin);
 
-            pressButton(P_INPUT_A, audioOut, audioin);
-            releaseButton(P_INPUT_A, audioOut, audioin);
+            pressButton(P_INPUT_X, audioOut, audioin);
+            releaseButton(P_INPUT_X, audioOut, audioin);
 
             releaseButton(P_SHIFT_DOWN, audioOut, audioin);
 
@@ -348,11 +348,7 @@ enum EParams {
 
             AssertLeds(expectedLeds);
 
-            // encval = -350;
-            WaitMs(500, audioOut, audioin);
-
-            WaitMs(500, audioOut, audioin);
-            WaitMs(500, audioOut, audioin);
+            encval = 350;
             WaitMs(500, audioOut, audioin);
 
             AssertScreen("connectState.bmp");
@@ -501,7 +497,7 @@ enum EParams {
               write_bmp(fname, screenBuffer);
               free(screenBuffer);
               free(fname);
-              Assert::Fail();
+              Assert::Fail(L"Expectation file did not exists. Created.");
             }
           } else {
             fclose(file);
@@ -523,7 +519,7 @@ enum EParams {
               free(expectedBuffer);
               free(diffName);
               free(fname);
-              Assert::Fail();
+              Assert::Fail(L"Mismatch between actual and expected. Actual file created as a *.diff.bmp.");
             }
           }
 
